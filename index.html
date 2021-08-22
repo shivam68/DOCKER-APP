@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu+Mono');
+
+body {
+margin:0;
+background: white; 
+font-family: Ubuntu;
+width: 100%;
+}
+
+.icon-bar {
+  width: 100%;
+  background-color: #555;
+  overflow: auto;
+}
+
+.icon-bar a {
+  float: left;
+  width: 14%;
+  text-align: center;
+  padding: 12px 0;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 36px;
+}
+
+.icon-bar a:hover {
+  background-color: rgb(13, 3, 14);
+}
+
+.active {
+  background-color: #46b7eb;
+}
+
+.boxed {
+  background-color: black;
+  color: white;
+  padding: 15px;
+  height: 350px;
+  width: 890px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: auto;
+  border: 5px solid gray;
+}
+
+#in1 {
+  margin-left: 25%;
+  width: 50%;
+  height: 30px;
+  align-items: center;
+  padding: 15px;
+  box-sizing: border-box;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+
+}
+#id3 {
+  margin-left: 25%;
+  width: 50%;
+  height: 15px;
+  align-items: center;
+  padding: 18px;
+  box-sizing: border-box;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+#id4 {
+    width: 100%;
+    align-items: center;
+    margin-left: 30%;
+    padding: 10px;
+    height: 60px;
+}
+
+
+</style>
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<body>
+<div class="icon-bar">
+  <a class="active" onclick="lw('docker images')" ><i class="fa fa-picture-o"></i></a> 
+  <a onclick="heading('Enter {Container Name} {Image:Tag} ');"><i class="fa fa-plus"></i></a> 
+  <a onclick="lw('docker ps');"><i class="fa fa-eye"></i></a> 
+  <a onclick="lw('show all');"><i class="fa fa-info"></i></a>
+  <a onclick="heading('Enter {Existing-Container Name/Id} to Start');" ><i class="fa fa-play"></i></a> 
+  <a onclick="heading('Enter {Existing-Container Name/Id} to Stop');" ><i class="fa fa-stop"></i></a> 
+  <a onclick="heading('docker rm --force {Container Name/Id}');" ><i class="fa fa-trash"></i></a> 
+</div>
+
+<div id="id4"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeI7WNwv-i-CB4IPC9ae4C3UyWK_O81CTZoIeNxpqsV28zRCdPrIAyjCynOECRnJ_UhA&usqp=CAU"></div>
+
+<pre>
+<div>
+<p id="id1" class="boxed" style="font-size: x-large;" >[user@localhost]>>  you will get your ouput here.....</p>
+</div>
+</pre>
+
+<div id="id3" style="font-size: medium;">Enter your input... </div>
+<input id="in1"><button id="bt1"  onclick= 'answer();' >Click me</button></input>
+
+</body>
+</html> 
+
+<script>
+  function lw(arg) {
+    var xhr = new XMLHttpRequest();
+    var inp = arg;
+    if (inp  == 'show all'){
+        var inp = 'docker ps -a'
+        xhr.open("GET","http://192.168.29.60/cgi-bin/dockerps.py?x="+inp ,true);
+        xhr.send();
+        xhr.onload = function(){
+          var out = xhr.responseText;
+          document.getElementById('id1').innerHTML = out;
+        }
+    }
+    else{
+      xhr.open("GET","http://192.168.29.60/cgi-bin/dockerps.py?x="+arg ,true);
+      xhr.send();
+      xhr.onload = function(){
+        var out = xhr.responseText;
+        document.getElementById('id1').innerHTML = out;
+      }
+    }  
+    
+  }
+
+  function heading(header_data){
+    data = document.getElementById("id3").innerHTML= header_data;
+  }
+
+  function history() {
+    var run_info = document.getElementById("in1").value;
+    document.getElementById("in1").value= null;
+    return run_info;
+  }
+
+  function answer(){
+    var xhr = new XMLHttpRequest();
+    var data = document.getElementById("id3").innerHTML;
+    var ouput= document.getElementById("in1").value;
+    var cmd =''
+    if (data == 'Enter {Container Name} {Image:Tag} '){
+      cmd = 'docker run -dit '
+      final_data = cmd.concat(ouput);
+    }
+    else if (data == 'Enter {Existing-Container Name/Id} to Start'){
+      cmd = 'docker start '
+      final_data = cmd.concat(ouput);
+    }
+    else if (data= 'Enter {Existing-Container Name/Id} to Stop'){
+      cmd = 'docker stop '
+      final_data = cmd.concat(ouput);
+    }
+    else if (data = 'docker rm --force {Container Name/Id}'){
+      cmd = 'docker rm -f '
+      final_data = cmd.concat(ouput);
+    }
+    else{
+      final_data = ouput;
+    }
+    xhr.open("GET","http://192.168.29.60/cgi-bin/dockerps.py?x="+final_data ,true);
+    xhr.send();
+    xhr.onload = function(){
+      var out = xhr.responseText;
+      document.getElementById('id1').innerHTML = out;
+      }
+    document.getElementById("in1").value= null;
+  }
+</script>
+
